@@ -8,14 +8,14 @@
         android:id="@+id/dreamPhotoA"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
+        android:scaleType="fitCenter"
         android:importantForAccessibility="no" />
 
     <ImageView
         android:id="@+id/dreamPhotoB"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
+        android:scaleType="fitCenter"
         android:visibility="invisible"
         android:importantForAccessibility="no" />
 
