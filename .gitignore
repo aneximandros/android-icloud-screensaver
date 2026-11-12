@@ -6,3 +6,6 @@ local.properties
 app/build/
 captures/
 .DS_Store
+keystore.properties
+*.jks
+*.keystore
