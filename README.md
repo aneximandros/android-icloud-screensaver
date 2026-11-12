@@ -4,13 +4,16 @@ A native Android screensaver ([DreamService](https://developer.android.com/refer
 
 No Apple account, no iCloud credentials, and no third-party services are required at runtime — the app talks directly to Apple's CloudKit Web Services API using the anonymous public access that Apple grants to anyone with the album link.
 
+> **Privacy note:** iCloud Shared Albums are accessible to anyone who has the link. They are not private in the traditional sense — the URL is hard to guess but not secret. Keep this in mind before putting personal photos in a Shared Album.
+
 ---
 
 ## Features
 
 - Fade-in/fade-out transitions between photos (10-second slides, 1.5-second fades)
 - Automatic pagination — works with albums of any size
-- Photo cache: once a photo is downloaded it is not re-downloaded while the app is installed
+- Album index re-fetched on every screensaver start — newly added photos appear automatically on the next run
+- Photo cache: image files are stored locally so photos don't re-download between runs
 - Simple in-app settings screen to paste the album URL
 - Tested on Sony Android TV (Android 10/11)
 
@@ -79,7 +82,7 @@ adb devices
 
 ### 3. Install the APK
 
-Build from source (see below) or download a pre-built APK from [Releases](../../releases).
+Download a pre-built APK from [Releases](../../releases), or build from source (see below).
 
 ```bash
 adb install icloud-screensaver.apk
@@ -190,6 +193,15 @@ Replace `${f}` in the `downloadURL` with any filename (e.g. `photo.jpeg`) to get
 - `anonymousPublicAccess.tokenTTL` is 1200 seconds (20 min). The download URL expiry (`e=` param) is typically ~1 hour. For long screensaver sessions, re-fetch URLs periodically.
 - `clientBuildNumber` comes from the `data-cw-private-build-number` attribute in `photos.icloud.com/shared/album/<token>` page HTML. It may change when Apple updates the web app, but the API appears to accept older values.
 - Pagination: if the response includes a `continuationMarker` field, pass it in the next request body to retrieve additional photos.
+
+---
+
+## Limitations
+
+- **Image resolution:** Photos are served as JPEG derivatives at ~1536 px wide — not the full native resolution of the original. This is Apple's standard medium-quality derivative for shared albums.
+- **API stability:** The app relies on undocumented CloudKit Web Services endpoints. Apple could change them at any time. If photos stop loading, check the `clientBuildNumber` value in `ICloudPhotosDream.java` against the current `data-cw-private-build-number` attribute in `photos.icloud.com` page HTML.
+- **Album accessibility:** Shared Album links are not private — anyone with the URL can access the photos. Use a dedicated album rather than your main photo library.
+- **OLED screens:** Like any screensaver showing bright or high-contrast images, prolonged use on an OLED panel carries some burn-in risk.
 
 ---
 
