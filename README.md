@@ -16,9 +16,53 @@ No Apple account, no iCloud credentials, and no third-party services are require
 
 ---
 
+## Prerequisites
+
+### On your TV — enable ADB over the network
+
+ADB (Android Debug Bridge) is how you install apps that are not on the Play Store. You only need to do this once.
+
+1. **Find your TV's IP address**
+   Settings → Network & Internet → (your Wi-Fi network) → the IP address is listed there.
+
+2. **Unlock Developer Options**
+   Settings → Device Preferences → About → scroll down to **Build number** and click it **7 times** in a row. You'll see a message saying "You are now a developer."
+
+3. **Enable Network debugging**
+   Settings → Device Preferences → Developer options → turn on **Network debugging** (sometimes called *ADB over network* or *USB debugging*). The screen will show your TV's IP address and port (usually `:5555`).
+
+### On your computer — install ADB
+
+ADB is a small command-line tool that comes with the Android SDK Platform Tools.
+
+- **Mac:** `brew install android-platform-tools`
+- **Windows:** Download [SDK Platform Tools](https://developer.android.com/tools/releases/platform-tools) and unzip it. Add the folder to your PATH or run commands from inside it.
+- **Linux:** `sudo apt install adb` (Debian/Ubuntu) or equivalent.
+
+Verify it works:
+```bash
+adb version
+```
+
+---
+
 ## Setup
 
-### 1. Get your iCloud Shared Album URL
+### 1. Connect to your TV
+
+```bash
+adb connect <TV_IP_ADDRESS>:5555
+```
+
+Replace `<TV_IP_ADDRESS>` with the IP shown in Developer options. Your TV may show a prompt asking you to allow the connection — accept it.
+
+Verify the connection:
+```bash
+adb devices
+# Should show something like: 192.168.1.42:5555  device
+```
+
+### 2. Get your iCloud Shared Album URL
 
 1. Open **Photos** on your iPhone or iPad.
 2. Open the album you want to share, tap the person icon (or Share button), and enable **Shared Album**.
@@ -33,7 +77,7 @@ No Apple account, no iCloud credentials, and no third-party services are require
 > **Note:** This app requires the new-format `photos.icloud.com/shared/album/…` URL.  
 > Old-format `icloud.com/photos/0…` links are not supported.
 
-### 2. Install the APK
+### 3. Install the APK
 
 Build from source (see below) or download a pre-built APK from [Releases](../../releases).
 
@@ -41,20 +85,15 @@ Build from source (see below) or download a pre-built APK from [Releases](../../
 adb install icloud-screensaver.apk
 ```
 
-### 3. Enter the album URL
+### 4. Enter the album URL
 
-Open the **iCloud Screensaver** app on your TV. Paste the album URL and tap **Save**.
+The **iCloud Screensaver** app will appear in your TV's app drawer. Open it, paste the album URL into the text field, and tap **Save**.
 
-Alternatively, set it via ADB:
-```bash
-adb shell 'am start -n com.aneximandros.icloudscreensaver/.SetupActivity'
-```
+### 5. Enable the screensaver
 
-### 4. Enable the screensaver
+Settings → Device Preferences → Screen saver → select **iCloud Photos** → tap **Start Now** to try it immediately.
 
-**TV Settings → Device Preferences → Screen saver → iCloud Photos**
-
-Then tap **Start Now** to try it immediately.
+The first time it runs there will be a few seconds of black screen while photos download. Subsequent runs use the local cache and start instantly.
 
 ---
 
@@ -158,6 +197,9 @@ Replace `${f}` in the `downloadURL` with any filename (e.g. `photo.jpeg`) to get
 
 | Symptom | Likely cause |
 |---|---|
+| `adb connect` times out | TV's Network debugging is off, or firewall is blocking port 5555 |
+| `adb connect` says "connection refused" | TV and computer are on different networks or VLANs |
+| TV shows an "Allow ADB?" prompt | Accept it; tick "Always allow from this computer" |
 | Screensaver starts then immediately stops | Album URL not saved, or album is private |
 | Black screen for a few seconds then photos appear | Normal — first-run download; subsequent runs use the cache |
 | `fetchPhotoUrls: no anonymousPublicAccess` in logcat | Album is set to invite-only, not "Anyone with the link" |
