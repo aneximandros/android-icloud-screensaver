@@ -24,7 +24,7 @@ No Apple account, no iCloud credentials, and no third-party services are require
 2. Open the album you want to share, tap the person icon (or Share button), and enable **Shared Album**.
 3. Tap **Copy Link** — the URL looks like:
    ```
-   https://photos.icloud.com/shared/album/097wU9UYunOLNf4tmzPUSMN2Q
+   https://photos.icloud.com/shared/album/AbCdEfGhIjKlMnOpQrStUvW
    ```
 4. The album must be set to **"Anyone with the link"** (the default for new Shared Albums).
 
