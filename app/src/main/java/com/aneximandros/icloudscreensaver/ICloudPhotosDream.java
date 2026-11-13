@@ -202,6 +202,8 @@ public class ICloudPhotosDream extends DreamService {
                         JSONObject fields = rec.optJSONObject("fields");
                         if (fields == null) continue;
                         String url = extractAssetDownloadUrl(fields, "resJPEGMedRes");
+                        if (url == null) url = extractAssetDownloadUrl(fields, "resJPEGFullRes");
+                        if (url == null) url = extractAssetDownloadUrl(fields, "resOriginalRes");
                         if (url != null) urls.add(url);
                     }
                 }
@@ -278,7 +280,11 @@ public class ICloudPhotosDream extends DreamService {
             // Cache by path only (strip expiring query string) for reuse across URL refreshes.
             String pathOnly = urlStr.contains("?") ? urlStr.substring(0, urlStr.indexOf('?')) : urlStr;
             File cached = new File(cacheDir, Integer.toHexString(pathOnly.hashCode()) + ".jpg");
-            if (cached.exists()) return BitmapFactory.decodeFile(cached.getAbsolutePath());
+            if (cached.exists()) {
+                Bitmap cached_bmp = BitmapFactory.decodeFile(cached.getAbsolutePath());
+                if (cached_bmp != null) return cached_bmp;
+                cached.delete();
+            }
 
             URL url = new URL(urlStr);
             HttpURLConnection c = (HttpURLConnection) url.openConnection();
